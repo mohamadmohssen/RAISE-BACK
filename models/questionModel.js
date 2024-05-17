@@ -12,7 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     type: {
-      //type here is (SO,MG... |(for every question))
       type: DataTypes.STRING,
     },
     is_important: {

@@ -12,18 +12,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
     },
     full_name: {
-      //the full name of the baby
       type: DataTypes.STRING,
     },
     mother_name: {
       type: DataTypes.STRING,
     },
     DOB: {
-      //get the day, month and year only
       type: DataTypes.DATEONLY,
     },
     age: {
       type: DataTypes.INTEGER,
+    },
+    gender: {
+      type: DataTypes.BOOLEAN,
     },
     val_id: {
       //this is like it identity(hawiye, passport...)
