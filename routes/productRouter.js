@@ -1,6 +1,7 @@
 // import controllers review, products
 const productController = require("../controllers/productController.js");
 const reviewController = require("../controllers/reviewController");
+const userController = require("../controllers/userController.js");
 
 // router
 const router = require("express").Router();
@@ -11,7 +12,9 @@ router.post(
   productController.upload,
   productController.addProduct
 );
-
+router.post("/addUser", userController.addUser);
+router.get("/allUsers", userController.getAllUsers);
+router.get("/takedUsers", userController.getTakedUsers);
 router.get("/allProducts", productController.getAllProducts);
 
 router.get("/published", productController.getPublishedProduct);

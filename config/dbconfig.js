@@ -2,7 +2,7 @@ module.exports = {
   HOST: "localhost",
   USER: "root",
   PASSWORD: "",
-  DB: "node_sequelize_api",
+  DB: "child_therapy",
   dialect: "mysql",
 
   pool: {

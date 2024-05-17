@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // routers
 const router = require("./routes/productRouter.js");
-app.use("/api/products", router);
+app.use("/api/admin", router);
 
 //static Images Folder
 

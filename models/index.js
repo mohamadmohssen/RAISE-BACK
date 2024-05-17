@@ -31,7 +31,11 @@ db.sequelize = sequelize;
 
 db.products = require("./productModel.js")(sequelize, DataTypes);
 db.reviews = require("./reviewModel.js")(sequelize, DataTypes);
-
+db.user = require("./userModel.js")(sequelize, DataTypes);
+db.question = require("./questionModel.js")(sequelize, DataTypes);
+db.admin = require("./adminModel.js")(sequelize, DataTypes);
+db.userAdmin = require("./userAdminModel.js")(sequelize, DataTypes);
+db.userQuestion = require("./UserQuestionModel.js")(sequelize, DataTypes);
 db.sequelize.sync({ force: false }).then(() => {
   console.log("yes re-sync done!");
 });
@@ -46,6 +50,27 @@ db.products.hasMany(db.reviews, {
 db.reviews.belongsTo(db.products, {
   foreignKey: "product_id",
   as: "product",
+});
+
+//user and question many to many relation ship
+
+db.user.belongsToMany(db.question, {
+  through: db.userQuestion,
+  foreignKey: "user_id",
+});
+db.question.belongsToMany(db.user, {
+  through: db.userQuestion,
+  foreignKey: "question_id",
+});
+
+//user and admin many to many relation ship
+db.user.belongsToMany(db.admin, {
+  through: db.userAdmin,
+  foreignKey: "user_id",
+});
+db.admin.belongsToMany(db.user, {
+  through: db.userAdmin,
+  foreignKey: "admin_id",
 });
 
 module.exports = db;
