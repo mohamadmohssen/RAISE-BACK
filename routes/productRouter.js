@@ -2,6 +2,7 @@
 const productController = require("../controllers/productController.js");
 const reviewController = require("../controllers/reviewController");
 const userController = require("../controllers/userController.js");
+const adminController = require("../controllers/adminController.js");
 
 // router
 const router = require("express").Router();
@@ -13,11 +14,16 @@ router.post(
   productController.addProduct
 );
 router.post("/addUser", userController.addUser);
-router.get("/allUsers", userController.getAllUsers);
+router.get("/getAllUsers", userController.getAllUsers);
 router.get("/takedUsers", userController.getTakedUsers);
 router.get("/allProducts", productController.getAllProducts);
 
 router.get("/published", productController.getPublishedProduct);
+
+// Admin Url and Controller
+router.post("/addAdmin", adminController.addAdmin);
+router.get("/getAllAdmins", adminController.getAllAdmins);
+router.get("/checkUserExists", adminController.checkUserExists);
 
 // Review Url and Controller
 
