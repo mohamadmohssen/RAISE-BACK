@@ -13,6 +13,9 @@ app.use(express.urlencoded({ extended: true }));
 const router = require("./routes/productRouter.js");
 app.use("/api/admin", router);
 
+const route = require("./routes/questionRouter.js");
+app.use("/api/question", route);
+
 //static Images Folder
 
 app.use("/Images", express.static("./Images"));

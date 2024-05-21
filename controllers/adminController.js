@@ -73,7 +73,7 @@ const getAllUnderSuperAdmin = async (req, res) => {
   try {
     const therapists = await Admin.findAll({
       where: {
-        role: 1, // Assuming 1 represents the therapist role
+        role: 2, // Assuming 2 represents the admin role
       },
     });
 
