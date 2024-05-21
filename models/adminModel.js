@@ -5,7 +5,14 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    full_name: {
+    first_name: {
+      type: DataTypes.STRING,
+    },
+
+    last_name: {
+      type: DataTypes.STRING,
+    },
+    city: {
       type: DataTypes.STRING,
     },
     phone_number: {
@@ -13,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     email: {
       type: DataTypes.STRING,
-      unique: true,
     },
     password: {
       type: DataTypes.STRING,

@@ -1,4 +1,5 @@
 const db = require("../models");
+const { Sequelize } = require("sequelize"); // Ensure Sequelize is imported
 
 // model
 const Admin = db.admin;
@@ -6,19 +7,38 @@ const Admin = db.admin;
 const addAdmin = async (req, res) => {
   try {
     let info = {
-      full_name: req.body.full_name,
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      city: req.body.city,
       phone_number: req.body.phone_number,
       email: req.body.email,
       password: req.body.password,
       role: req.body.role,
     };
 
-    const admin = await Admin.create(adminInfo);
+    const admin = await Admin.create(info);
     console.log(admin);
     res.status(200).json(admin);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" + error });
+  }
+};
+
+const checkUserExists = async (identifier) => {
+  try {
+    // Search for the user by username or email
+    const user = await User.findOne({
+      where: {
+        [Sequelize.Op.or]: [{ username: identifier }, { email: identifier }],
+      },
+    });
+
+    // Return true if user is found, false otherwise
+    return user ? true : false;
+  } catch (error) {
+    console.error("Error checking if user exists:", error);
+    throw new Error("Error checking if user exists");
   }
 };
 
@@ -105,4 +125,14 @@ const editAdminRole = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+module.exports = {
+  addAdmin,
+  getAllAdmins,
+  deleteAdmin,
+  getAllTherapists,
+  getAllUnderSuperAdmin,
+  editAdminRole,
+  checkUserExists,
 };
