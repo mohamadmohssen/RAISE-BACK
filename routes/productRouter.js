@@ -22,6 +22,9 @@ router.get("/published", productController.getPublishedProduct);
 
 // Admin Url and Controller
 router.post("/addAdmin", adminController.addAdmin);
+router.post("/signup", adminController.signUp);
+router.post("/login", adminController.login);
+
 router.get("/getAllAdmins", adminController.getAllAdmins);
 router.get("/checkUserExists", adminController.checkUserExists);
 
