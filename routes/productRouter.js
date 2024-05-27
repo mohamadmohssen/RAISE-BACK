@@ -24,23 +24,8 @@ router.get("/published", productController.getPublishedProduct);
 router.post("/addAdmin", adminController.addAdmin);
 router.post("/signup", adminController.signUp);
 router.post("/login", adminController.login);
-
+router.get("/admindata", adminController.getAdminData);
 router.get("/getAllAdmins", adminController.getAllAdmins);
 router.get("/checkUserExists", adminController.checkUserExists);
-
-// Review Url and Controller
-
-router.get("/allReviews", reviewController.getAllReviews);
-router.post("/addReview", reviewController.addReview);
-
-// get product Reviews
-router.get("/getProductReviews/:id", productController.getProductReviews);
-
-// Products router
-router.get("/:id", productController.getOneProduct);
-
-router.put("/:id", productController.updateProduct);
-
-router.delete("/:id", productController.deleteProduct);
 
 module.exports = router;

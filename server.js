@@ -4,9 +4,12 @@ const cors = require("cors");
 const app = express();
 
 // middleware
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+  })
+);
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
 
 // routers
@@ -16,16 +19,13 @@ app.use("/api/admin", router);
 const route = require("./routes/questionRouter.js");
 app.use("/api/question", route);
 
-//static Images Folder
-
+// static Images Folder
 app.use("/Images", express.static("./Images"));
 
-//port
-
+// port
 const PORT = process.env.PORT || 8080;
 
-//server
-
+// server
 app.listen(PORT, () => {
   console.log(`server is running on port ${PORT}`);
 });

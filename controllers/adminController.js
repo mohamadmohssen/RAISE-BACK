@@ -74,13 +74,6 @@ const signUp = async (req, res, next) => {
       role,
     });
     console.log("New user created:", newUser);
-
-    const token = jwt.sign({ admin_id: newUser.admin_id }, "secretkey123", {
-      expiresIn: "90d",
-    });
-    console.log("Generated token:", token);
-
-    res.status(201).json({ message: "User created successfully", token });
   } catch (error) {
     console.error("Error in signUp:", error);
     next(error);
@@ -126,6 +119,45 @@ const login = async (req, res, next) => {
   }
 };
 
+const getAdminData = async (req, res, next) => {
+  try {
+    const authHeader = req.header("Authorization");
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Access token is missing or invalid" });
+    }
+
+    jwt.verify(token, "secretkey123", async (err, user) => {
+      if (err) {
+        return res.status(403).json({ message: "Token is not valid" });
+      }
+
+      const adminId = user.admin_id;
+      const admin = await Admin.findByPk(adminId, {
+        attributes: [
+          "admin_id",
+          "first_name",
+          "last_name",
+          "city",
+          "phone_number",
+          "email",
+          "role",
+        ],
+      });
+
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+
+      return res.status(200).json(admin);
+    });
+  } catch (error) {
+    console.error("Error fetching admin data from controller:", error);
+    next(error);
+  }
+};
 const checkUserExists = async (identifier) => {
   try {
     // Search for the user by username or email
@@ -231,6 +263,7 @@ module.exports = {
   addAdmin,
   getAllAdmins,
   deleteAdmin,
+  getAdminData,
   getAllTherapists,
   getAllUnderSuperAdmin,
   editAdminRole,
