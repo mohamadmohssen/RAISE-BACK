@@ -27,6 +27,10 @@ module.exports = (sequelize, DataTypes) => {
     role: {
       type: DataTypes.INTEGER,
     },
+    is_accepted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   });
   return Admin;
 };

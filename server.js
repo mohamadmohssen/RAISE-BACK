@@ -13,12 +13,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routers
-const router = require("./routes/productRouter.js");
-app.use("/api/admin", router);
 
+//admin
+const router = require("./routes/adminRouter.js");
+app.use("/api/admin", router);
+//question
 const route = require("./routes/questionRouter.js");
 app.use("/api/question", route);
-
+//user
+const userrouter = require("./routes/userRouter.js");
+app.use("/api/user", router);
 // static Images Folder
 app.use("/Images", express.static("./Images"));
 

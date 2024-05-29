@@ -17,6 +17,8 @@ const addUser = async (req, res) => {
       city: req.body.city,
       is_taken: 1,
       gender: req.body.gender,
+      finished: false,
+      result: 0,
     };
 
     const user = await User.create(info);

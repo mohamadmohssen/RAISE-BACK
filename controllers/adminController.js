@@ -15,6 +15,7 @@ const addAdmin = async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       role: req.body.role,
+      is_accepted: true,
     };
 
     const admin = await Admin.create(info);
@@ -72,6 +73,7 @@ const signUp = async (req, res, next) => {
       email,
       password: hashedPassword,
       role,
+      is_accepted: false,
     });
     console.log("New user created:", newUser);
   } catch (error) {
@@ -79,7 +81,21 @@ const signUp = async (req, res, next) => {
     next(error);
   }
 };
+const getAdminById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const admin = await Admin.findOne({ where: { admin_id: id } });
 
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    res.status(200).send(admin);
+  } catch (error) {
+    console.error("Error fetching admin by ID:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -118,7 +134,42 @@ const login = async (req, res, next) => {
     next(error);
   }
 };
+const updateAdminById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const {
+      first_name,
+      last_name,
+      city,
+      phone_number,
+      email,
+      role,
+      is_accepted,
+    } = req.body;
 
+    const admin = await Admin.findByPk(id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin not found" });
+    }
+
+    admin.first_name = first_name;
+    admin.last_name = last_name;
+    admin.city = city;
+    admin.phone_number = phone_number;
+    admin.email = email;
+    admin.role = role;
+    admin.is_accepted = is_accepted;
+
+    await admin.save();
+
+    return res
+      .status(200)
+      .json({ message: "Admin updated successfully", admin });
+  } catch (error) {
+    console.error("Error updating admin:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 const getAdminData = async (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
@@ -144,6 +195,7 @@ const getAdminData = async (req, res, next) => {
           "phone_number",
           "email",
           "role",
+          "is_accepted",
         ],
       });
 
@@ -176,7 +228,11 @@ const checkUserExists = async (identifier) => {
 
 const getAllAdmins = async (req, res) => {
   try {
-    const admins = await Admin.findAll();
+    const admins = await Admin.findAll({
+      where: {
+        is_accepted: true,
+      },
+    });
     console.log(admins);
     res.status(200).json(admins);
   } catch (error) {
@@ -210,7 +266,7 @@ const getAllTherapists = async (req, res) => {
   try {
     const therapists = await Admin.findAll({
       where: {
-        role: 1, // Assuming 1 represents the therapist role
+        role: 2, // Assuming 2 represents the therapist role
       },
     });
 
@@ -225,7 +281,7 @@ const getAllUnderSuperAdmin = async (req, res) => {
   try {
     const therapists = await Admin.findAll({
       where: {
-        role: 2, // Assuming 2 represents the admin role
+        role: 3, // Assuming 3 represents the admin role
       },
     });
 
@@ -270,4 +326,6 @@ module.exports = {
   checkUserExists,
   signUp,
   login,
+  getAdminById,
+  updateAdminById,
 };

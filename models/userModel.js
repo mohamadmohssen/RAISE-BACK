@@ -37,6 +37,14 @@ module.exports = (sequelize, DataTypes) => {
       //is taken means if he is taken by a therapist
       type: DataTypes.BOOLEAN,
     },
+    finished: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    result: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
   });
   return User;
 };
