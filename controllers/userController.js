@@ -19,6 +19,15 @@ const addUser = async (req, res) => {
       gender: req.body.gender,
       finished: false,
       result: 0,
+      so_res: 0,
+      au_res: 0,
+      mg_res: 0,
+      mf_res: 0,
+      lex_res: 0,
+      lco_res: 0,
+      le_res: 0,
+      nbre_res: 0,
+      dg_res: 0,
     };
 
     const user = await User.create(info);

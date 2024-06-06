@@ -315,6 +315,75 @@ const editAdminRole = async (req, res) => {
   }
 };
 
+const getAllRequestedAdminsTherapists = async (req, res) => {
+  try {
+    const admins = await Admin.findAll({
+      where: {
+        is_accepted: false,
+        role: 0,
+      },
+    });
+    console.log(admins);
+    res.status(200).json(admins);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getAllRequestedAdminsUnderSuperAdmin = async (req, res) => {
+  try {
+    const admins = await Admin.findAll({
+      where: {
+        is_accepted: false,
+        role: 1,
+      },
+    });
+    console.log(admins);
+    res.status(200).json(admins);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const acceptTherapist = async (req, res) => {
+  const adminId = req.params.id;
+
+  try {
+    const admin = await Admin.findByPk(adminId);
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    admin.role = 2;
+    admin.is_accepted = true;
+    await admin.save();
+
+    res.status(200).json(admin);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+const acceptUnderSuperAdmin = async (req, res) => {
+  const adminId = req.params.id;
+
+  try {
+    const admin = await Admin.findByPk(adminId);
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    admin.role = 3;
+    admin.is_accepted = true;
+    await admin.save();
+
+    res.status(200).json(admin);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 module.exports = {
   addAdmin,
   getAllAdmins,
@@ -328,4 +397,8 @@ module.exports = {
   login,
   getAdminById,
   updateAdminById,
+  getAllRequestedAdminsTherapists,
+  getAllRequestedAdminsUnderSuperAdmin,
+  acceptTherapist,
+  acceptUnderSuperAdmin,
 };

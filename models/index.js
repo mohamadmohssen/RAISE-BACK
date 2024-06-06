@@ -29,28 +29,26 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.products = require("./productModel.js")(sequelize, DataTypes);
-db.reviews = require("./reviewModel.js")(sequelize, DataTypes);
 db.user = require("./userModel.js")(sequelize, DataTypes);
 db.question = require("./questionModel.js")(sequelize, DataTypes);
 db.admin = require("./adminModel.js")(sequelize, DataTypes);
 db.userAdmin = require("./userAdminModel.js")(sequelize, DataTypes);
 db.userQuestion = require("./UserQuestionModel.js")(sequelize, DataTypes);
+db.au = require("./auModel.js")(sequelize, DataTypes);
+db.dg = require("./dgModel.js")(sequelize, DataTypes);
+db.lco = require("./lcoModel.js")(sequelize, DataTypes);
+db.le = require("./leModel.js")(sequelize, DataTypes);
+db.lex = require("./lexModel.js")(sequelize, DataTypes);
+db.mf = require("./mfModel.js")(sequelize, DataTypes);
+db.mg = require("./mgModel.js")(sequelize, DataTypes);
+db.nbre = require("./nbreModel.js")(sequelize, DataTypes);
+db.so = require("./soModel.js")(sequelize, DataTypes);
+
 db.sequelize.sync({ force: false }).then(() => {
   console.log("yes re-sync done!");
 });
 
 // 1 to Many Relation
-
-db.products.hasMany(db.reviews, {
-  foreignKey: "product_id",
-  as: "review",
-});
-
-db.reviews.belongsTo(db.products, {
-  foreignKey: "product_id",
-  as: "product",
-});
 
 //user and question many to many relation ship
 

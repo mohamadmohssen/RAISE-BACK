@@ -22,7 +22,10 @@ const route = require("./routes/questionRouter.js");
 app.use("/api/question", route);
 //user
 const userrouter = require("./routes/userRouter.js");
-app.use("/api/user", router);
+app.use("/api/user", userrouter);
+//type
+const typerouter = require("./routes/typeRouter.js");
+app.use("/api/type", typerouter);
 // static Images Folder
 app.use("/Images", express.static("./Images"));
 

@@ -45,6 +45,42 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    so_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    au_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    mg_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    mf_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    lex_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    lco_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    le_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    nbre_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    dg_res: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
   });
   return User;
 };
