@@ -18,13 +18,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
     },
     flag: {
-      //flag here is 0 when the question appears but it turns 1 when deleting it bcz when reviewing old people's answers don't have an error
       type: DataTypes.BOOLEAN,
     },
     category: {
-      //category means (AP,A,B...(for every group of questions))
       type: DataTypes.STRING,
     },
   });
+
+  Question.associate = (models) => {
+    Question.belongsToMany(models.User, {
+      through: models.UserQuestion,
+      foreignKey: "question_id",
+    });
+  };
+
   return Question;
 };

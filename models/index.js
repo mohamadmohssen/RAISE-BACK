@@ -71,4 +71,7 @@ db.admin.belongsToMany(db.user, {
   foreignKey: "admin_id",
 });
 
+db.userAdmin.belongsTo(db.user, { foreignKey: "user_id" });
+db.userAdmin.belongsTo(db.admin, { foreignKey: "admin_id" });
+
 module.exports = db;
