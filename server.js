@@ -23,8 +23,15 @@ app.use("/api/question", route);
 //user
 const userrouter = require("./routes/userRouter.js");
 app.use("/api/user", userrouter);
-// static Images Folder
-app.use("/Images", express.static("./Images"));
+//type
+const typerouter = require("./routes/typeRouter.js");
+app.use("/api/type", typerouter);
+//user admin route
+const useradminrouter = require("./routes/userAdminRouter.js");
+app.use("/api/useradmin", useradminrouter);
+//user question route
+const userquestionrouter = require("./routes/userQuestionRouter.js");
+app.use("/api/userquestion", userquestionrouter);
 
 // port
 const PORT = process.env.PORT || 8080;

@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
     first_name: {
       type: DataTypes.STRING,
     },
-
     last_name: {
       type: DataTypes.STRING,
     },
@@ -16,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
     },
     phone_number: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
     },
     email: {
       type: DataTypes.STRING,
@@ -32,5 +31,13 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false,
     },
   });
+
+  Admin.associate = (models) => {
+    Admin.belongsToMany(models.user, {
+      through: models.userAdmin,
+      foreignKey: "admin_id",
+    });
+  };
+
   return Admin;
 };

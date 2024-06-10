@@ -3,10 +3,18 @@ module.exports = (sequelize, DataTypes) => {
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "users", // Table name
+        key: "user_id",
+      },
     },
     question_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "questions", // Table name
+        key: "question_id",
+      },
     },
     answer: {
       type: DataTypes.BOOLEAN,
@@ -15,5 +23,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
     },
   });
+
   return UserQuestion;
 };
