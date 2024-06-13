@@ -109,6 +109,72 @@ const getUserById = async (req, res) => {
   }
 };
 
+const setUserFinished = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findByPk(userId);
+
+    if (user) {
+      user.finished = true; // Set the finished status to true
+      await user.save();
+      res.status(200).json({ message: "User marked as finished", user });
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const updateUserResult = async (req, res) => {
+  try {
+    const { userId, importantYesCount } = req.body;
+    // Find the user by userId
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update the user's result with the provided importantYesCount
+    user.result = importantYesCount;
+    await user.save();
+
+    res.status(200).json({ message: "User result updated", user });
+  } catch (error) {
+    console.error("Error updating user result:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const updateUserResultsByType = async (req, res) => {
+  try {
+    const { userId, resultsByType } = req.body;
+
+    // Find the user by userId
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update the user's result for each type
+    for (const [type, count] of Object.entries(resultsByType)) {
+      const lowerCaseType = type.toLowerCase();
+      console.log(lowerCaseType);
+      user[`${lowerCaseType}_res`] = count;
+    }
+
+    await user.save();
+
+    res.status(200).json({ message: "User results updated", user });
+  } catch (error) {
+    console.error("Error updating user results:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 // Export the functions
 module.exports = {
   addUser,
@@ -117,4 +183,7 @@ module.exports = {
   getUserByPhoneNumber1,
   updateUserToTaken,
   getUserById, // Export the new function
+  setUserFinished,
+  updateUserResult,
+  updateUserResultsByType,
 };

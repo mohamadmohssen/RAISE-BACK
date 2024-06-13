@@ -16,5 +16,9 @@ router.get(
 
 // Delete a user's answer for a question
 router.delete("/answer", userQuestionController.deleteUserAnswer);
+router.get(
+  "/calculateImportantYesAnswers/:userId",
+  userQuestionController.calculateImportantYesAnswers
+);
 
 module.exports = router;

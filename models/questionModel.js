@@ -30,6 +30,9 @@ module.exports = (sequelize, DataTypes) => {
       through: models.UserQuestion,
       foreignKey: "question_id",
     });
+    Question.hasMany(models.UserQuestion, {
+      foreignKey: "question_id",
+    });
   };
 
   return Question;
