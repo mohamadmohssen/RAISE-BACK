@@ -64,9 +64,10 @@ const saveUserAnswers = async (req, res) => {
 // Function to get all answers from a user
 const getUserAnswers = async (req, res) => {
   const userId = req.params.userId;
+  const tstcount = req.params.testCounter;
   try {
     const userAnswers = await UserQuestion.findAll({
-      where: { user_id: userId },
+      where: { user_id: userId, test_counter: tstcount },
     });
 
     res.status(200).json(userAnswers);

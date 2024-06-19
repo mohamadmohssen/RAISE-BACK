@@ -6,7 +6,10 @@ const userQuestionController = require("../controllers/userQuestionController");
 router.post("/answers", userQuestionController.saveUserAnswers);
 
 // Get all answers from a user
-router.get("/answers/:userId", userQuestionController.getUserAnswers);
+router.get(
+  "/answers/:userId/:testCounter",
+  userQuestionController.getUserAnswers
+);
 
 // Get a specific user's answer for a question
 router.get(

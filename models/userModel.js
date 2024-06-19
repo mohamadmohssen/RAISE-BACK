@@ -79,6 +79,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    test_counter: {
+      type: DataTypes.INTEGER,
+    },
   });
 
   User.associate = (models) => {

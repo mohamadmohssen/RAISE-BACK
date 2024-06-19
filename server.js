@@ -32,7 +32,9 @@ app.use("/api/useradmin", useradminrouter);
 //user question route
 const userquestionrouter = require("./routes/userQuestionRouter.js");
 app.use("/api/userquestion", userquestionrouter);
-
+//base route
+const baserouter = require("./routes/baseRouter.js");
+app.use("/api/base", baserouter);
 // port
 const PORT = process.env.PORT || 8080;
 

@@ -1,19 +1,19 @@
 module.exports = (sequelize, DataTypes) => {
-  const MF = sequelize.define("MF_model", {
+  const Base = sequelize.define("base_model", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
 
-    age: {
+    risk: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    score: {
+    high_risk: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
   });
-  return MF;
+  return Base;
 };

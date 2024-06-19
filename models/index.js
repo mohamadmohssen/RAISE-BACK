@@ -1,6 +1,6 @@
 const dbConfig = require("../config/dbconfig.js");
 
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes, Op } = require("sequelize");
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
@@ -34,16 +34,8 @@ db.question = require("./questionModel.js")(sequelize, DataTypes);
 db.admin = require("./adminModel.js")(sequelize, DataTypes);
 db.userAdmin = require("./userAdminModel.js")(sequelize, DataTypes);
 db.userQuestion = require("./UserQuestionModel.js")(sequelize, DataTypes);
-db.au = require("./auModel.js")(sequelize, DataTypes);
-db.dg = require("./dgModel.js")(sequelize, DataTypes);
-db.lco = require("./lcoModel.js")(sequelize, DataTypes);
-db.le = require("./leModel.js")(sequelize, DataTypes);
-db.lex = require("./lexModel.js")(sequelize, DataTypes);
-db.mf = require("./mfModel.js")(sequelize, DataTypes);
-db.mg = require("./mgModel.js")(sequelize, DataTypes);
-db.nbre = require("./nbreModel.js")(sequelize, DataTypes);
-db.so = require("./soModel.js")(sequelize, DataTypes);
-
+db.type = require("./typeModel.js")(sequelize, DataTypes);
+db.base = require("./baseModel.js")(sequelize, DataTypes);
 db.sequelize.sync({ force: false }).then(() => {
   console.log("yes re-sync done!");
 });

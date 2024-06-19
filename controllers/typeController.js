@@ -1,167 +1,110 @@
 const db = require("../models");
+const Type = db.type; // Use the new unified table model
+const typeController = {
+  // Create a new record
+  create: async (req, res) => {
+    try {
+      const data = req.body;
+      console.log(data);
+      const newItem = await Type.create(data);
+      res.status(201).json(newItem);
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to create entry in type_model`,
+        details: error.message,
+      });
+    }
+  },
 
-// models
-const AU = db.au;
-const SO = db.so;
-const MG = db.mg;
-const MF = db.mf;
-const NBRE = db.nbre;
-const LCO = db.lco;
-const LE = db.le;
-const LEX = db.lex;
-const DG = db.dg;
+  // Retrieve all records
+  getAll: async (req, res) => {
+    try {
+      const itemList = await Type.findAll();
+      res.status(200).json(itemList);
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to retrieve entries from type_model`,
+        details: error.message,
+      });
+    }
+  },
 
-// Helper function to create CRUD operations
-const createCRUD = (Model, modelName) => {
-  return {
-    create: async (req, res) => {
-      try {
-        const newItem = await Model.create(req.body);
-        res.status(201).json(newItem);
-      } catch (error) {
-        res.status(500).json({
-          error: `Failed to create ${modelName}`,
-          details: error.message,
-        });
+  // Retrieve a single record by ID
+  getOne: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const item = await Type.findOne({ where: { type_id: id } });
+      if (item) {
+        res.status(200).json(item);
+      } else {
+        res.status(404).json({ error: `Entry not found in type_model` });
       }
-    },
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to retrieve entry from type_model`,
+        details: error.message,
+      });
+    }
+  },
 
-    getAll: async (req, res) => {
-      try {
-        const itemList = await Model.findAll();
-        res.status(200).json(itemList);
-      } catch (error) {
-        res.status(500).json({
-          error: `Failed to retrieve ${modelName} entries`,
-          details: error.message,
-        });
+  // Update a record by ID
+  update: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const [updated] = await Type.update(req.body, {
+        where: { type_id: id },
+      });
+      if (updated) {
+        const updatedItem = await Type.findOne({ where: { type_id: id } });
+        res.status(200).json(updatedItem);
+      } else {
+        res.status(404).json({ error: `Entry not found in type_model` });
       }
-    },
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to update entry in type_model`,
+        details: error.message,
+      });
+    }
+  },
 
-    update: async (req, res) => {
-      try {
-        const id = req.params.id;
-        const [updated] = await Model.update(req.body, {
-          where: { id },
-        });
-        if (updated) {
-          const updatedItem = await Model.findOne({ where: { id } });
-          res.status(200).json(updatedItem);
-        } else {
-          res.status(404).json({ error: `${modelName} entry not found` });
-        }
-      } catch (error) {
-        res.status(500).json({
-          error: `Failed to update ${modelName} entry`,
-          details: error.message,
-        });
+  // Delete a record by ID
+  delete: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const deleted = await Type.destroy({
+        where: { type_id: id },
+      });
+      if (deleted) {
+        res.status(204).send();
+      } else {
+        res.status(404).json({ error: `Entry not found in type_model` });
       }
-    },
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to delete entry from type_model`,
+        details: error.message,
+      });
+    }
+  },
 
-    delete: async (req, res) => {
-      try {
-        const id = req.params.id;
-        const deleted = await Model.destroy({
-          where: { id },
-        });
-        if (deleted) {
-          res.status(204).send();
-        } else {
-          res.status(404).json({ error: `${modelName} entry not found` });
-        }
-      } catch (error) {
-        res.status(500).json({
-          error: `Failed to delete ${modelName} entry`,
-          details: error.message,
-        });
+  // Retrieve records by type
+  getByType: async (req, res) => {
+    try {
+      const type = req.params.type;
+      const items = await Type.findAll({ where: { type } });
+      if (items.length > 0) {
+        res.status(200).json(items);
+      } else {
+        res.status(404).json({ error: `No entries found for type: ${type}` });
       }
-    },
-    getOne: async (req, res) => {
-      try {
-        const id = req.params.id;
-        const type = await Model.findOne({ where: { id: id } });
-        res.status(200).send(type);
-      } catch (error) {
-        res.status(500).json({
-          error: `Failed to retrieve ${modelName} entry`,
-          details: error.message,
-        });
-      }
-    },
-  };
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to retrieve entries by type from type_model`,
+        details: error.message,
+      });
+    }
+  },
 };
 
-// Create CRUD operations for each model
-const auCRUD = createCRUD(AU, "AU");
-const soCRUD = createCRUD(SO, "SO");
-const mgCRUD = createCRUD(MG, "MG");
-const mfCRUD = createCRUD(MF, "MF");
-const nbreCRUD = createCRUD(NBRE, "NBRE");
-const lcoCRUD = createCRUD(LCO, "LCO");
-const leCRUD = createCRUD(LE, "LE");
-const lexCRUD = createCRUD(LEX, "LEX");
-const dgCRUD = createCRUD(DG, "DG");
-
-module.exports = {
-  // AU
-  createAU: auCRUD.create,
-  getAllAU: auCRUD.getAll,
-  updateAU: auCRUD.update,
-  deleteAU: auCRUD.delete,
-  getOneAU: auCRUD.getOne,
-  // SO
-  createSO: soCRUD.create,
-  getAllSO: soCRUD.getAll,
-  updateSO: soCRUD.update,
-  deleteSO: soCRUD.delete,
-  getOneSO: soCRUD.getOne,
-
-  // MG
-  createMG: mgCRUD.create,
-  getAllMG: mgCRUD.getAll,
-  updateMG: mgCRUD.update,
-  deleteMG: mgCRUD.delete,
-  getOneMG: mgCRUD.getOne,
-
-  // MF
-  createMF: mfCRUD.create,
-  getAllMF: mfCRUD.getAll,
-  updateMF: mfCRUD.update,
-  deleteMF: mfCRUD.delete,
-  getOneMF: mfCRUD.getOne,
-
-  // NBRE
-  createNBRE: nbreCRUD.create,
-  getAllNBRE: nbreCRUD.getAll,
-  updateNBRE: nbreCRUD.update,
-  deleteNBRE: nbreCRUD.delete,
-  getOneNBRE: nbreCRUD.getOne,
-
-  // LCO
-  createLCO: lcoCRUD.create,
-  getAllLCO: lcoCRUD.getAll,
-  updateLCO: lcoCRUD.update,
-  deleteLCO: lcoCRUD.delete,
-  getOneLCO: lcoCRUD.getOne,
-
-  // LE
-  createLE: leCRUD.create,
-  getAllLE: leCRUD.getAll,
-  updateLE: leCRUD.update,
-  deleteLE: leCRUD.delete,
-  getOneLE: leCRUD.getOne,
-
-  // LEX
-  createLEX: lexCRUD.create,
-  getAllLEX: lexCRUD.getAll,
-  updateLEX: lexCRUD.update,
-  deleteLEX: lexCRUD.delete,
-  getOneLEX: lexCRUD.getOne,
-
-  // DG
-  createDG: dgCRUD.create,
-  getAllDG: dgCRUD.getAll,
-  updateDG: dgCRUD.update,
-  deleteDG: dgCRUD.delete,
-  getOneDG: dgCRUD.getOne,
-};
+module.exports = typeController;

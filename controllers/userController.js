@@ -1,37 +1,131 @@
 // Import necessary modules
+const { Op } = require("sequelize"); // Import Op directly from sequelize
 const db = require("../models");
 const User = db.user;
-
 // Function to add a user
 const addUser = async (req, res) => {
   try {
-    let info = {
-      phone_number1: req.body.phone_number1,
-      phone_number2: req.body.phone_number2,
-      full_name: req.body.full_name,
-      mother_name: req.body.mother_name,
-      DOB: req.body.DOB,
-      age: req.body.age,
-      val_id: req.body.val_id,
-      city: req.body.city,
-      is_taken: 0,
-      gender: req.body.gender,
-      finished: false,
-      result: 0,
-      so_res: 0,
-      au_res: 0,
-      mg_res: 0,
-      mf_res: 0,
-      lex_res: 0,
-      lco_res: 0,
-      le_res: 0,
-      nbre_res: 0,
-      dg_res: 0,
-    };
+    // Extracting data from the request body
+    const {
+      phone_number1,
+      phone_number2,
+      full_name,
+      mother_name,
+      DOB,
+      age,
+      val_id,
+      city,
+      gender,
+    } = req.body;
 
-    const user = await User.create(info);
-    console.log(user);
-    res.status(200).json(user);
+    // Find user by phone numbers and full name
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [
+          {
+            [Op.or]: [
+              { phone_number1: phone_number1 },
+              { phone_number2: phone_number1 },
+            ],
+          },
+          {
+            [Op.or]: [
+              { phone_number1: phone_number2 },
+              { phone_number2: phone_number2 },
+            ],
+          },
+          { full_name: full_name },
+        ],
+      },
+    });
+
+    if (!user) {
+      // User does not exist, create a new one
+      const newUser = await User.create({
+        phone_number1,
+        phone_number2,
+        full_name,
+        mother_name,
+        DOB,
+        age,
+        val_id,
+        city,
+        gender,
+        is_taken: 0,
+        finished: false,
+        result: 0,
+        so_res: 0,
+        au_res: 0,
+        mg_res: 0,
+        mf_res: 0,
+        lex_res: 0,
+        lco_res: 0,
+        le_res: 0,
+        nbre_res: 0,
+        dg_res: 0,
+        test_counter: 1,
+      });
+      res.status(200).json(newUser);
+    } else {
+      // User exists, check their details
+      if (user.finished) {
+        // If finished is true, reset fields and increment test_counter
+        await user.update({
+          phone_number1,
+          phone_number2,
+          full_name,
+          mother_name,
+          DOB,
+          age,
+          val_id,
+          city,
+          gender,
+          finished: false,
+          result: 0,
+          so_res: 0,
+          au_res: 0,
+          mg_res: 0,
+          mf_res: 0,
+          lex_res: 0,
+          lco_res: 0,
+          le_res: 0,
+          nbre_res: 0,
+          dg_res: 0,
+          test_counter: user.test_counter + 1,
+        });
+      } else {
+        // If finished is false, check age
+        if (user.age != age) {
+          // If age is different, reset fields and increment test_counter
+          await user.update({
+            phone_number1,
+            phone_number2,
+            full_name,
+            mother_name,
+            DOB,
+            val_id,
+            city,
+            gender,
+            age,
+            finished: false,
+            result: 0,
+            so_res: 0,
+            au_res: 0,
+            mg_res: 0,
+            mf_res: 0,
+            lex_res: 0,
+            lco_res: 0,
+            le_res: 0,
+            nbre_res: 0,
+            dg_res: 0,
+            test_counter: user.test_counter + 1,
+          });
+        } else {
+          res.status(200).json(user);
+        }
+      }
+      res.status(200).json(user);
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -59,7 +153,16 @@ const getUserByPhoneNumber1 = async (req, res) => {
   try {
     const phoneNumber1 = req.params.phoneNumber1;
     const user = await User.findOne({
-      where: { phone_number1: phoneNumber1 },
+      where: {
+        [Op.or]: [
+          {
+            [Op.or]: [{ phone_number1: phoneNumber1 }],
+          },
+          {
+            [Op.or]: [{ phone_number2: phoneNumber1 }],
+          },
+        ],
+      },
     });
 
     if (user) {
