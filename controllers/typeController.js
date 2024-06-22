@@ -105,6 +105,47 @@ const typeController = {
       });
     }
   },
+
+  getByAge: async (req, res) => {
+    try {
+      const age = req.params.age;
+      const items = await Type.findAll({ where: { age } });
+      if (items.length > 0) {
+        res.status(200).json(items);
+      } else {
+        res.status(404).json({ error: `No entries found for age: ${age}` });
+      }
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to retrieve entries by age from type_model`,
+        details: error.message,
+      });
+    }
+  },
+  getByDgAge: async (req, res) => {
+    try {
+      const age = req.params.age;
+      const type = "dg"; // Specify the type as "dg"
+
+      // Fetch entries by age and type "dg"
+      const items = await Type.findAll({ where: { age, type } });
+
+      if (items.length > 0) {
+        res.status(200).json(items);
+      } else {
+        res
+          .status(404)
+          .json({
+            error: `No entries found for age: ${age} and type: ${type}`,
+          });
+      }
+    } catch (error) {
+      res.status(500).json({
+        error: `Failed to retrieve entries by age and type from type_model`,
+        details: error.message,
+      });
+    }
+  },
 };
 
 module.exports = typeController;

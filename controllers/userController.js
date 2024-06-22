@@ -23,18 +23,27 @@ const addUser = async (req, res) => {
       where: {
         [Op.or]: [
           {
-            [Op.or]: [
-              { phone_number1: phone_number1 },
-              { phone_number2: phone_number1 },
+            [Op.and]: [
+              {
+                [Op.or]: [
+                  { phone_number1: phone_number1 },
+                  { phone_number2: phone_number1 },
+                ],
+              },
+              { full_name: full_name },
             ],
           },
           {
-            [Op.or]: [
-              { phone_number1: phone_number2 },
-              { phone_number2: phone_number2 },
+            [Op.and]: [
+              {
+                [Op.or]: [
+                  { phone_number1: phone_number2 },
+                  { phone_number2: phone_number2 },
+                ],
+              },
+              { full_name: full_name },
             ],
           },
-          { full_name: full_name },
         ],
       },
     });
@@ -120,8 +129,6 @@ const addUser = async (req, res) => {
             dg_res: 0,
             test_counter: user.test_counter + 1,
           });
-        } else {
-          res.status(200).json(user);
         }
       }
       res.status(200).json(user);

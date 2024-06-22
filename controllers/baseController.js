@@ -13,10 +13,9 @@ exports.create = async (req, res) => {
   }
 };
 
-// Get all base model entries
 exports.findAll = async (req, res) => {
   try {
-    const bases = await Base.findAll();
+    const bases = await Base.findAll({});
     res.status(200).json(bases);
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -76,11 +76,13 @@ const getAllAdminUserConnections = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const deleteUserAdminConnection = async (req, res) => {
   try {
     const userId = req.body.userid;
     const adminId = req.body.adminid;
 
+    // Find and delete the connection
     const connection = await UserAdmin.findOne({
       where: {
         user_id: userId,
@@ -93,6 +95,22 @@ const deleteUserAdminConnection = async (req, res) => {
     }
 
     await connection.destroy();
+    // After deletion, check if the user still has any connections in UserAdmin
+    const remainingConnections = await UserAdmin.findOne({
+      where: {
+        user_id: userId,
+      },
+    });
+
+    // If no remaining connections, update is_taken to false in User model
+    if (!remainingConnections) {
+      const user = await User.findByPk(userId);
+      if (user) {
+        user.is_taken = false;
+        await user.save();
+      }
+    }
+
     res.status(200).json({ message: "Connection deleted successfully" });
   } catch (error) {
     console.error(error);
