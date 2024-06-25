@@ -5,6 +5,7 @@ const adminController = require("../controllers/adminController.js");
 const router = require("express").Router();
 
 // Admin Url and Controller
+
 router.post("/addAdmin", adminController.addAdmin);
 router.post("/signup", adminController.signUp);
 router.post("/login", adminController.login);
@@ -21,9 +22,12 @@ router.get(
   "/getRequestedAdmins",
   adminController.getAllRequestedAdminsUnderSuperAdmin
 );
+router.post("/forgot-password", adminController.forgottenPassword);
+router.put("/reset-password/:token", adminController.resetPassword);
 router.get("/getAdminById/:id", adminController.getAdminById);
 router.put("/updateAdmin/:id", adminController.updateAdminById);
 router.put("/acceptTherapist/:id", adminController.acceptTherapist);
 router.put("/acceptUnderSuperAdmin/:id", adminController.acceptUnderSuperAdmin);
 router.delete("/deleteRequest/:id", adminController.deleteAdmin);
+
 module.exports = router;

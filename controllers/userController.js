@@ -5,18 +5,68 @@ const User = db.user;
 // Function to add a user
 const addUser = async (req, res) => {
   try {
-    // Extracting data from the request body
+    // Extracting data from the request body, without age
     const {
       phone_number1,
       phone_number2,
       full_name,
       mother_name,
       DOB,
-      age,
       val_id,
       city,
       gender,
     } = req.body;
+    //-----------------------This commented function, adjust the age in months by rounding up to the next month if the number of days exceeds a certain threshold--------
+    // const calculateAgeInMonths = (dob) => {
+    //   const today = new Date();
+    //   const birthDate = new Date(dob);
+    //   const yearsDifference = today.getFullYear() - birthDate.getFullYear();
+    //   const monthsDifference = today.getMonth() - birthDate.getMonth();
+    //   const daysDifference = today.getDate() - birthDate.getDate();
+
+    //   let ageInMonths = yearsDifference * 12 + monthsDifference;
+
+    //   // Adjust for incomplete months
+    //   if (daysDifference < 0) {
+    //     ageInMonths--;
+    //     // Calculate days in the previous month
+    //     const previousMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+    //     const daysInPreviousMonth = previousMonth.getDate();
+    //     const adjustedDays = daysInPreviousMonth + daysDifference;
+
+    //     // If adjusted days >= 15, round up to next month
+    //     if (adjustedDays >= 15) {
+    //       ageInMonths++;
+    //     }
+    //   } else {
+    //     // If daysDifference >= 15, round up to next month
+    //     if (daysDifference >= 15) {
+    //       ageInMonths++;
+    //     }
+    //   }
+
+    //   return ageInMonths;
+    // };
+    // Function to calculate age in months
+    const calculateAgeInMonths = (dob) => {
+      const today = new Date();
+      const birthDate = new Date(dob);
+      const yearsDifference = today.getFullYear() - birthDate.getFullYear();
+      const monthsDifference = today.getMonth() - birthDate.getMonth();
+      const daysDifference = today.getDate() - birthDate.getDate();
+
+      let ageInMonths = yearsDifference * 12 + monthsDifference;
+
+      // If the day of the month is not reached, reduce the month difference
+      if (daysDifference < 0) {
+        ageInMonths--;
+      }
+
+      return ageInMonths;
+    };
+
+    // Calculate the age from DOB in months and round it
+    const calculatedAge = Math.round(calculateAgeInMonths(DOB));
 
     // Find user by phone numbers and full name
     const user = await User.findOne({
@@ -56,7 +106,7 @@ const addUser = async (req, res) => {
         full_name,
         mother_name,
         DOB,
-        age,
+        age: calculatedAge,
         val_id,
         city,
         gender,
@@ -77,6 +127,15 @@ const addUser = async (req, res) => {
       res.status(200).json(newUser);
     } else {
       // User exists, check their details
+
+      // Check if the DOB is correct
+      if (user.DOB !== DOB) {
+        res.status(400).json({
+          message: "The provided Date of Birth does not match our records.",
+        });
+        return;
+      }
+
       if (user.finished) {
         // If finished is true, reset fields and increment test_counter
         await user.update({
@@ -84,8 +143,7 @@ const addUser = async (req, res) => {
           phone_number2,
           full_name,
           mother_name,
-          DOB,
-          age,
+          age: calculatedAge,
           val_id,
           city,
           gender,
@@ -104,18 +162,17 @@ const addUser = async (req, res) => {
         });
       } else {
         // If finished is false, check age
-        if (user.age != age) {
+        if (user.age !== calculatedAge) {
           // If age is different, reset fields and increment test_counter
           await user.update({
             phone_number1,
             phone_number2,
             full_name,
             mother_name,
-            DOB,
+            age: calculatedAge,
             val_id,
             city,
             gender,
-            age,
             finished: false,
             result: 0,
             so_res: 0,

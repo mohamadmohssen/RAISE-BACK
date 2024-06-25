@@ -30,6 +30,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    resetPasswordToken: {
+      type: DataTypes.STRING,
+      defaultValue: null,
+    },
+    resetPasswordExpires: {
+      type: DataTypes.DATE,
+      defaultValue: null,
+    },
   });
 
   Admin.associate = (models) => {

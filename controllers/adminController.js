@@ -1,9 +1,91 @@
 const db = require("../models");
-const { Sequelize } = require("sequelize"); // Ensure Sequelize is imported
-const bcrypt = require("bcrypt"); // For password hashing
-const jwt = require("jsonwebtoken");
-// model
+const { Sequelize } = require("sequelize");
+const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer");
 const Admin = db.admin;
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  console.log(token);
+  try {
+    const user = await Admin.findOne({ where: { resetPasswordToken: token } });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    // Update user's password
+    const hashedPassword = await bcrypt.hash(password, 12);
+    user.password = hashedPassword;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const forgottenPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await Admin.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate a token for password reset
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    const resetTokenExpiry = Date.now() + 3600000; // Token expiry in 1 hour
+
+    // Send email with password reset link
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "mmodestmo@gmail.com", // Replace with your email address
+        pass: "nseieppfjjoqylwt", // Replace with your email password or app password
+      },
+    });
+
+    const mailOptions = {
+      from: "mmodestmo@gmail.com",
+      to: email,
+      subject: "Password Reset Request",
+      text: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n
+        Please click on the following link, or paste this into your browser to complete the process:\n\n
+        http://localhost:5173/reset/${resetToken} \n\n
+        If you did not request this, please ignore this email and your password will remain unchanged.\n`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending password reset email:", error);
+        return res.status(500).json({ message: "Failed to send reset email" });
+      }
+      console.log("Password reset email sent:", info.response);
+
+      // Assuming you want to store the token temporarily in memory for verification
+      user.resetPasswordToken = resetToken;
+      user.resetPasswordExpires = resetTokenExpiry;
+      user.save();
+
+      res
+        .status(200)
+        .json({ message: "Password reset email sent successfully" });
+    });
+  } catch (error) {
+    console.error("Error in forgot password:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 const addAdmin = async (req, res) => {
   try {
@@ -29,7 +111,7 @@ const addAdmin = async (req, res) => {
 
 const signUp = async (req, res, next) => {
   try {
-    console.log("Request body:", req.body); // Log request body
+    console.log("Request body:", req.body);
 
     const { first_name, last_name, city, phone_number, email, password, role } =
       req.body;
@@ -75,12 +157,15 @@ const signUp = async (req, res, next) => {
       role,
       is_accepted: false,
     });
+
     console.log("New user created:", newUser);
+    return res.status(200).json({ message: "User added successfully." });
   } catch (error) {
     console.error("Error in signUp:", error);
     next(error);
   }
 };
+
 const getAdminById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -96,6 +181,7 @@ const getAdminById = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -125,15 +211,14 @@ const login = async (req, res, next) => {
     return res.status(200).json({
       message: "Login successful",
       token,
-      user: {
-        name: `${user.first_name} ${user.last_name}`,
-      },
+      user: { name: `${user.first_name} ${user.last_name}` },
     });
   } catch (error) {
     console.error("Error in login:", error);
     next(error);
   }
 };
+
 const updateAdminById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -170,6 +255,7 @@ const updateAdminById = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const getAdminData = async (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
@@ -210,9 +296,9 @@ const getAdminData = async (req, res, next) => {
     next(error);
   }
 };
+
 const checkUserExists = async (identifier) => {
   try {
-    // Search for the user by username or email
     const user = await User.findOne({
       where: {
         [Sequelize.Op.or]: [{ username: identifier }, { email: identifier }],
@@ -229,9 +315,7 @@ const checkUserExists = async (identifier) => {
 const getAllAdmins = async (req, res) => {
   try {
     const admins = await Admin.findAll({
-      where: {
-        is_accepted: true,
-      },
+      where: { is_accepted: true },
     });
     console.log(admins);
     res.status(200).json(admins);
@@ -242,19 +326,16 @@ const getAllAdmins = async (req, res) => {
 };
 
 const deleteAdmin = async (req, res) => {
-  const adminId = req.params.id; // Assuming you pass the admin id in the URL params
+  const adminId = req.params.id;
 
   try {
-    // Find the admin by id
     const admin = await Admin.findByPk(adminId);
 
     if (!admin) {
       return res.status(404).json({ error: "Admin not found" });
     }
 
-    // Delete the admin
     await admin.destroy();
-
     res.status(200).json({ message: "Admin deleted successfully" });
   } catch (error) {
     console.error(error);
@@ -265,9 +346,7 @@ const deleteAdmin = async (req, res) => {
 const getAllTherapists = async (req, res) => {
   try {
     const therapists = await Admin.findAll({
-      where: {
-        role: 2, // Assuming 2 represents the therapist role
-      },
+      where: { role: 2 },
     });
 
     res.status(200).json(therapists);
@@ -280,9 +359,7 @@ const getAllTherapists = async (req, res) => {
 const getAllUnderSuperAdmin = async (req, res) => {
   try {
     const therapists = await Admin.findAll({
-      where: {
-        role: 3, // Assuming 3 represents the admin role
-      },
+      where: { role: 3 },
     });
 
     res.status(200).json(therapists);
@@ -297,14 +374,12 @@ const editAdminRole = async (req, res) => {
   const { role } = req.body;
 
   try {
-    // Find the admin by id
     const admin = await Admin.findByPk(adminId);
 
     if (!admin) {
       return res.status(404).json({ error: "Admin not found" });
     }
 
-    // Update the role
     admin.role = role;
     await admin.save();
 
@@ -346,6 +421,7 @@ const getAllRequestedAdminsUnderSuperAdmin = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const acceptTherapist = async (req, res) => {
   const adminId = req.params.id;
 
@@ -365,6 +441,7 @@ const acceptTherapist = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 const acceptUnderSuperAdmin = async (req, res) => {
   const adminId = req.params.id;
 
@@ -384,6 +461,7 @@ const acceptUnderSuperAdmin = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 module.exports = {
   addAdmin,
   getAllAdmins,
@@ -401,4 +479,6 @@ module.exports = {
   getAllRequestedAdminsUnderSuperAdmin,
   acceptTherapist,
   acceptUnderSuperAdmin,
+  resetPassword,
+  forgottenPassword,
 };

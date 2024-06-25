@@ -1,5 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
   const UserQuestion = sequelize.define("user_question", {
+    uq_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
