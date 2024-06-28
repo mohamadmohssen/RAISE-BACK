@@ -1,5 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
   const UserAdmin = sequelize.define("userAdmin", {
+    ua_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,

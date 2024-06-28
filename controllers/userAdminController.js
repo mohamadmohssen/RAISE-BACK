@@ -50,7 +50,13 @@ const getAllAdminUserConnections = async (req, res) => {
         },
         {
           model: Admin,
-          attributes: ["admin_id", "first_name", "last_name", "email"],
+          attributes: [
+            "admin_id",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+          ],
         },
       ],
     });
@@ -67,7 +73,9 @@ const getAllAdminUserConnections = async (req, res) => {
         first_name: connection.admin.first_name,
         last_name: connection.admin.last_name,
         email: connection.admin.email,
+        phone_number: connection.admin.phone_number,
       },
+      createdAt: connection.createdAt,
     }));
 
     res.status(200).json(result);
