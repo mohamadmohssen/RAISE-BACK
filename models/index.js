@@ -1,27 +1,34 @@
-const dbConfig = require("../config/dbconfig.js");
+require("dotenv").config(); // Load environment variables
 
-const { Sequelize, DataTypes, Op } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
-  dialect: dbConfig.dialect,
-  operatorsAliases: false,
+// Create Sequelize instance using environment variables
+const sequelize = new Sequelize(
+  process.env.DB_NAME,     // database name
+  process.env.DB_USER,     // username
+  process.env.DB_PASSWORD, // password
+  {
+    host: process.env.DB_HOST || "localhost",
+    dialect: process.env.DB_DIALECT || "mysql", // default to mysql if not set
+    logging: false, // disable SQL logs (optional)
 
-  pool: {
-    max: dbConfig.pool.max,
-    min: dbConfig.pool.min,
-    acquire: dbConfig.pool.acquire,
-    idle: dbConfig.pool.idle,
-  },
-});
+    pool: {
+      max: parseInt(process.env.DB_POOL_MAX) || 5,
+      min: parseInt(process.env.DB_POOL_MIN) || 0,
+      acquire: parseInt(process.env.DB_POOL_ACQUIRE) || 30000,
+      idle: parseInt(process.env.DB_POOL_IDLE) || 10000,
+    },
+  }
+);
 
+// Test DB connection
 sequelize
   .authenticate()
   .then(() => {
-    console.log("connected..");
+    console.log("✅ Database connected...");
   })
   .catch((err) => {
-    console.log("Error" + err);
+    console.error("❌ DB Connection Error: " + err);
   });
 
 const db = {};
@@ -29,6 +36,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+// Models
 db.user = require("./userModel.js")(sequelize, DataTypes);
 db.question = require("./questionModel.js")(sequelize, DataTypes);
 db.admin = require("./adminModel.js")(sequelize, DataTypes);
@@ -36,14 +44,13 @@ db.userAdmin = require("./userAdminModel.js")(sequelize, DataTypes);
 db.userQuestion = require("./UserQuestionModel.js")(sequelize, DataTypes);
 db.type = require("./typeModel.js")(sequelize, DataTypes);
 db.base = require("./baseModel.js")(sequelize, DataTypes);
+
+// Sync DB
 db.sequelize.sync({ force: false }).then(() => {
-  console.log("yes re-sync done!");
+  console.log("✅ DB re-sync done!");
 });
 
-// 1 to Many Relation
-
-//user and question many to many relation ship
-
+// Relationships
 db.user.belongsToMany(db.question, {
   through: db.userQuestion,
   foreignKey: "user_id",
@@ -53,7 +60,6 @@ db.question.belongsToMany(db.user, {
   foreignKey: "question_id",
 });
 
-//user and admin many to many relation ship
 db.user.belongsToMany(db.admin, {
   through: db.userAdmin,
   foreignKey: "user_id",

@@ -4,13 +4,10 @@
   "description": "node express crud api with sequelize",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "nodemon server.js"
   },
-  "keywords": [
-    "node",
-    "express",
-    "mysql"
-  ],
+  "keywords": ["node", "express", "mysql"],
   "author": "ahmad",
   "license": "ISC",
   "dependencies": {
