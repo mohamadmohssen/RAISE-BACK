@@ -215,24 +215,20 @@ const getTakedUsers = async (req, res) => {
 // Function to get a user by phone number1
 const getUserByPhoneNumber1 = async (req, res) => {
   try {
-    const phoneNumber1 = req.params.phoneNumber1;
-    const user = await User.findOne({
+    const phoneNumber = req.params.phoneNumber1;
+    const users = await User.findAll({
       where: {
         [Op.or]: [
-          {
-            [Op.or]: [{ phone_number1: phoneNumber1 }],
-          },
-          {
-            [Op.or]: [{ phone_number2: phoneNumber1 }],
-          },
+          { phone_number1: phoneNumber },
+          { phone_number2: phoneNumber },
         ],
       },
     });
 
-    if (user) {
-      res.status(200).json(user);
+    if (users && users.length > 0) {
+      res.status(200).json(users);
     } else {
-      res.status(404).json({ message: "User not found" });
+      res.status(404).json({ message: "Users not found" });
     }
   } catch (error) {
     console.error(error);

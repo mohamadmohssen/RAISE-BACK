@@ -34,7 +34,7 @@ const resetPassword = async (req, res) => {
 
 const forgottenPassword = async (req, res) => {
   const { email } = req.body;
-
+  console.log(email);
   try {
     const user = await Admin.findOne({ where: { email } });
 

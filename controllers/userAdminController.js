@@ -6,8 +6,11 @@ const UserAdmin = db.userAdmin;
 // Function to take a user by an admin
 const takeUser = async (req, res) => {
   try {
+    console.log(req.body.userid);
     const userId = req.body.userid;
     const adminId = req.body.adminid;
+    console.log(userId);
+    console.log(adminId);
 
     // Find the user
     const user = await User.findByPk(userId);

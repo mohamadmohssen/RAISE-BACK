@@ -1,7 +1,6 @@
-const db = require("../models"); // Adjust the path according to your project structure
-const Base = db.base; // Adjust the model import according to your project structure
+const db = require("../models");
+const Base = db.base;
 
-// Create a new base model entry
 exports.create = async (req, res) => {
   const { risk, high_risk } = req.body;
 
