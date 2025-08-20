@@ -1,6 +1,6 @@
 const db = require("../models");
 const { Sequelize } = require("sequelize");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const Admin = db.admin;
 const crypto = require("crypto");
