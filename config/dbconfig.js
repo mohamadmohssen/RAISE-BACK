@@ -15,7 +15,7 @@ const {
 module.exports = {
   // Prefer a single URL if provided (useful on Railway/PlanetScale/etc.)
   url: DB_URL || null,
- 
+
   // Discrete params (used if DB_URL is not set)
   HOST: DB_HOST,
   PORT: DB_PORT,
