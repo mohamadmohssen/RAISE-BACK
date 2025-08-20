@@ -18,7 +18,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routers
-
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
 // admin
 const router = require("./routes/adminRouter.js");
 app.use("/api/admin", router);
